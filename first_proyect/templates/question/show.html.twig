@@ -11,7 +11,18 @@
 
     <ul>
         {% for answer in answers %}
-            <li>{{ answer }}</li>
+            <div class="js-vote-arrows">
+                <li>{{ answer }}</li>
+                <a href="#" data-direction="up">UP</a>
+                <a href="#" data-direction="down">Down</a>
+                <span>+ <span class="js-vote-total">6</span></span>
+            </div>
         {% endfor %}
     </ul>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script src="{{ asset('js/question_show.js') }}"></script>
 {% endblock %}
