@@ -2,14 +2,17 @@
 
 namespace App;
 
+use App\Builder\CharacterBuilder;
+use App\Builder\CharacterBuilderFactory;
 use App\Character\Character;
-use BowType;
-use FireBolType;
-use MultiAtackType;
-use TwoHandedSwordType;
 
 class GameApplication
 {
+
+    public function __construct(private CharacterBuilderFactory $characterBuilderFactory) {
+
+    }
+
     public function play(Character $player, Character $ai): FightResult
     {
         $player->rest();
@@ -39,13 +42,38 @@ class GameApplication
         }
     }
 
+    private function createCharacterBuilder(): CharacterBuilder
+    {
+        return $this->characterBuilderFactory->createBuilder();
+    }
+
     public function createCharacter(string $character): Character
     {
         return match (strtolower($character)) {
-            'fighter' => new Character(90, 12, 0.25, new TwoHandedSwordType()),
-            'archer' => new Character(80, 10, 0.15, new BowType()),
-            'mage' => new Character(70, 8, 0.10, new FireBolType()),
-            'manage_archer' => new Character(70, 8, 0.10, new MultiAtackType([new BowType(), new FireBolType()])),
+            'fighter' => $this->createCharacterBuilder()
+                ->setMaxHealth(90)
+                ->setBaseDamage(12)
+                ->setArmorType('ice_block')
+                ->setAttackType('sword')
+                ->buildCharacter(),
+            'mage' => $this->createCharacterBuilder()
+                ->setMaxHealth(70)
+                ->setBaseDamage(8)
+                ->setAttackType('fire_bolt')
+                ->setArmorType('ice_block')
+                ->buildCharacter(),
+            'archer' => $this->createCharacterBuilder()
+                ->setMaxHealth(75)
+                ->setBaseDamage(9)
+                ->setAttackType('fire_bolt')
+                ->setArmorType('shield')
+                ->buildCharacter(),
+            'manage_archer' => $this->createCharacterBuilder()
+                ->setMaxHealth(75)
+                ->setBaseDamage(9)
+                ->setAttackType('fire_bolt', 'bow')
+                ->setArmorType('shield')
+                ->buildCharacter(),
             default => throw new \RuntimeException('Undefined Character'),
         };
     }
