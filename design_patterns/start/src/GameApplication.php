@@ -5,9 +5,12 @@ namespace App;
 use App\Builder\CharacterBuilder;
 use App\Builder\CharacterBuilderFactory;
 use App\Character\Character;
+use GameObserverInterface;
 
 class GameApplication
 {
+    /** @var GameObserverInterface[] */
+    private array $observers = [];
 
     public function __construct(private CharacterBuilderFactory $characterBuilderFactory) {
 
@@ -88,10 +91,27 @@ class GameApplication
         ];
     }
 
+    public function subscribre(GameObserverInterface $observer): void
+    {
+        if (!in_array($observer, $this->observers)) {
+            $this->observers[] = $observer;
+        }
+    }
+
+    public function unSubscribre(GameObserverInterface $observer): void
+    {
+        $key = array_search($observer, $this->observers);
+        if ($key !== false) {
+            unset($this->observers[$key]);
+        }
+    }
+
     private function finishFightResult(FightResult $fightResult, Character $winner, Character $loser): FightResult
     {
         $fightResult->setWinner($winner);
         $fightResult->setLoser($loser);
+
+        $this->notify($fightResult);
 
         return $fightResult;
     }
@@ -99,5 +119,12 @@ class GameApplication
     private function didPlayerDie(Character $player): bool
     {
         return $player->getCurrentHealth() <= 0;
+    }
+
+    private function notify(FightResult $fightResult): void
+    {
+        foreach ($this->observers as $observer) {
+            $observer->onFightFinished($fightResult);
+        }
     }
 }
