@@ -14,10 +14,18 @@ services:
     App\Service\BasicMessageService:
         class: App\Service\BasicMessageService
 
-    # Registro explícito del decorador
-    App\Service\DecoratedMessageService:
-        class: App\Service\DecoratedMessageService
+
+    App\Service\SmsDecoratedMessage:
+        class: App\Service\SmsDecoratedMessage
         decorates: App\Service\BasicMessageService
 
+    App\Service\FacebookDecoratedMessage:
+        class: App\Service\FacebookDecoratedMessage
+        decorates: App\Service\SmsDecoratedMessage
+
+    App\Service\SlackDecoratedMessage:
+        class: App\Service\SlackDecoratedMessage
+        decorates: App\Service\FacebookDecoratedMessage
+
     # Alias para la interfaz
-    App\Service\MessageServiceInterface: '@App\Service\DecoratedMessageService'
+    App\Service\MessageServiceInterface: '@App\Service\SlackDecoratedMessage'

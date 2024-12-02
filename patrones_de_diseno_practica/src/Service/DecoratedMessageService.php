@@ -14,8 +14,7 @@ class DecoratedMessageService implements MessageServiceInterface
 
     public function getMessage(string $name): string
     {
-        $baseDecorated = $this->decoratedService->getMessage($name);
-        return "$baseDecorated, !que tengas un buen día!";
+        return  $this->decoratedService->getMessage($name);
     }
 
 }
