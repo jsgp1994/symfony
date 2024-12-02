@@ -1,0 +1,23 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    # Registro explícito del servicio base
+    App\Service\BasicMessageService:
+        class: App\Service\BasicMessageService
+
+    # Registro explícito del decorador
+    App\Service\DecoratedMessageService:
+        class: App\Service\DecoratedMessageService
+        decorates: App\Service\BasicMessageService
+
+    # Alias para la interfaz
+    App\Service\MessageServiceInterface: '@App\Service\DecoratedMessageService'
