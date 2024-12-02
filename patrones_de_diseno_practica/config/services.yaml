@@ -29,3 +29,16 @@ services:
 
     # Alias para la interfaz
     App\Service\MessageServiceInterface: '@App\Service\SlackDecoratedMessage'
+
+    App\Service\Tax\TaxContextService:
+        class: App\Service\Tax\TaxContextService
+
+    App\Service\Tax\DefaultTaxService:
+        class: App\Service\Tax\DefaultTaxService
+
+
+    App\Service\Tax\TaxColombiaService:
+        class: App\Service\Tax\TaxColombiaService
+
+    App\Service\Tax\TaxSpainService:
+        class: App\Service\Tax\TaxSpainService
