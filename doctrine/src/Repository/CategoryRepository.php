@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Category;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -37,6 +38,27 @@ class CategoryRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function findAllOrder(): array
+    {
+        return $this->createQueryBuilder('c')
+                    ->orderBy('c.name', Criteria::DESC)
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    /**
+     * @return Category[]
+     */
+    public function search(string $value): array
+    {
+        return $this->createQueryBuilder('category')
+                    ->andWhere('category.name LIKE :value OR category.iconKey LIKE :value')
+                    ->setParameter('value', '%'.$value.'%')
+                    ->orderBy('category.name', 'DESC')
+                    ->getQuery()
+                    ->getResult();
     }
 
 //    /**
