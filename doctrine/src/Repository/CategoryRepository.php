@@ -43,6 +43,8 @@ class CategoryRepository extends ServiceEntityRepository
     public function findAllOrder(): array
     {
         return $this->createQueryBuilder('c')
+                    ->addSelect('fortuneCookie')
+                    ->leftJoin('c.fortuneCookies', 'fortuneCookie')
                     ->orderBy('c.name', Criteria::DESC)
                     ->getQuery()
                     ->getResult();
@@ -54,11 +56,25 @@ class CategoryRepository extends ServiceEntityRepository
     public function search(string $value): array
     {
         return $this->createQueryBuilder('category')
+                    ->addSelect('fortuneCookie')
+                    ->leftJoin('category.fortuneCookies', 'fortuneCookie')
                     ->andWhere('category.name LIKE :value OR category.iconKey LIKE :value')
+                    ->orWhere('fortuneCookie.fortune LIKE :value')
                     ->setParameter('value', '%'.$value.'%')
                     ->orderBy('category.name', 'DESC')
                     ->getQuery()
                     ->getResult();
+    }
+
+    public function findWithFortuneJoins(int $id): ?Category
+    {
+        return $this->createQueryBuilder('category')
+                    ->addSelect('fortuneCookie')
+                    ->leftJoin('category.fortuneCookies','fortuneCookie')
+                    ->andWhere('category.id = :id')
+                    ->setParameter('id', $id)
+                    ->getQuery()
+                    ->getOneOrNullResult();
     }
 
 //    /**
