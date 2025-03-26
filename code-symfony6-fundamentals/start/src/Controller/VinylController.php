@@ -2,13 +2,13 @@
 
 namespace App\Controller;
 
+use App\Service\MixRepository;
 use Knp\Bundle\TimeBundle\DateTimeFormatter;
 use Psr\Cache\CacheItemInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+
 
 use function Symfony\Component\String\u;
 // use GuzzleHttp\Client;
@@ -34,20 +34,14 @@ class VinylController extends AbstractController
     }
 
     #[Route('/browse/{slug}', name: 'app_browse')]
-    public function browse(HttpClientInterface $client,CacheInterface $cache ,?string $slug = null): Response
+    public function browse(MixRepository $mixRepository,?string $slug = null): Response
     {
 
-        $urlDatabase = 'https://raw.githubusercontent.com/SymfonyCasts/vinyl-mixes/main/mixes.json';
 
         $genre = $slug ? u(str_replace('-', ' ', $slug))->title(true) : null;
+        $mixes = $mixRepository->findAll();
 
 
-
-        $mixes = $cache->get('mixes_data', function(CacheItemInterface $item) use ($client, $urlDatabase) {
-            $item->expiresAfter(5);
-            $response = $client->request('GET', $urlDatabase);
-            return $response->toArray();
-        });
 
         // $client = new Client();
         // $response = $client->request('GET', $urlDatabase);
